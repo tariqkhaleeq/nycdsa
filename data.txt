@@ -1,3 +1,2 @@
-Git is open-source software 
-did this 
-did this just append? 
+Git is open-source software  
+R is open-source software
