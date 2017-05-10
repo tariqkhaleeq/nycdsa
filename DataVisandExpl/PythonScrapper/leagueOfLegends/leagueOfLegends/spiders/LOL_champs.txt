@@ -1,0 +1,136 @@
+Aatrox
+Ahri
+Akali
+Alistar
+Amumu
+Anivia
+Annie
+Ashe
+Aurelion Sol	strong
+Azir
+Bard	strong
+Blitzcrank
+Brand
+Braum
+Caitlyn
+Camille	strong
+Cassiopeia
+Cho'Gath
+Corki	popular
+Darius
+Diana
+Dr. Mundo
+Draven
+Ekko	strong
+Elise
+Evelynn
+Ezreal	popular
+Fiddlesticks
+Fiora
+Fizz
+Galio
+Gangplank
+Garen	popular
+Gnar
+Gragas	popular
+Graves
+Hecarim
+Heimerdinger	popular
+Illaoi	strong
+Irelia
+Ivern	strong
+Janna
+Jarvan IV
+Jax
+Jayce
+Jhin	strong
+Jinx
+Kalista
+Karma
+Karthus
+Kassadin
+Katarina	popular
+Kayle
+Kennen	popular
+Kha'Zix
+Kindred	strong
+Kled	strong
+Kog'Maw
+LeBlanc
+Lee Sin
+Leona
+Lissandra
+Lucian
+Lulu
+Lux
+Malphite	popular
+Malzahar
+Maokai
+Master Yi
+Miss Fortune
+Mordekaiser	popular
+Morgana
+Nami
+Nasus	popular
+Nautilus
+Nidalee	popular
+Nocturne
+Nunu
+Olaf
+Orianna
+Pantheon	popular
+Poppy	popular
+Quinn
+Rakan
+Rammus
+Rek'Sai	strong
+Renekton
+Rengar	strong
+Riven
+Rumble
+Ryze
+Sejuani
+Shaco
+Shen	popular
+Shyvana
+Singed
+Sion
+Sivir
+Skarner
+Sona
+Soraka
+Swain
+Syndra
+Tahm Kench	strong
+Taliyah	strong
+Talon
+Taric
+Teemo
+Thresh
+Tristana
+Trundle
+Tryndamere
+Twisted Fate
+Twitch
+Udyr
+Urgot
+Varus
+Vayne
+Veigar
+Vel'Koz
+Vi
+Viktor
+Vladimir
+Volibear
+Warwick
+Wukong
+Xayah	strong
+Xerath
+Xin Zhao
+Yasuo
+Yorick
+Zac
+Zed
+Ziggs
+Zilean
+Zyra
