@@ -1,4 +1,4 @@
-# Hello World
+# Hello World :wave:
 
 This is my git repository for my data science capstone projects.
 
