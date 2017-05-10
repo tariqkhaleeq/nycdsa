@@ -15,4 +15,4 @@ Currently I have capstone projects that cover:
     - Build a shiny app possibly
     - Read more about data here :
 
-You can find more by clicking DataVisandExplr folder.
+You can find out more by clicking [DataVisandExplr folder](https://github.com/tariqkhaleeq/nycdsa/tree/master/DataVisandExpl).
