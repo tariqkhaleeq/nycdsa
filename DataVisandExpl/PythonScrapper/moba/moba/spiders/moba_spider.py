@@ -26,9 +26,9 @@ class MobaSpiderSpider(Spider):
             mobility = Selector(text=row).css('div[class="radial-stats"] ::attr(rating)').extract()[3]
             utility = Selector(text=row).css('div[class="radial-stats"] ::attr(rating)').extract()[4]
             if not (Selector(text=row).xpath('//div[@class="champ-list__item__role"]/span/b[2]/text()').extract()):
-                pos2 = ''
-                pickrate2 = ''
-                winrate2 = ''
+                pos2 = '-'
+                pickrate2 = '-'
+                winrate2 = '-'
 
             item = MobaItem()
             item['name'] = name
