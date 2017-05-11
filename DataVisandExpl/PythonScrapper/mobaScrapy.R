@@ -71,24 +71,24 @@ pr2[,2]<-as.integer(strsplit(unlist(pr2[,2]),"[%]"))
 #histogram or boxplot
 
 #histogram
-ggplot(data=pr, aes(pickrate1)) + geom_histogram(breaks=seq(40, 100, by = 5), 
+pickrate1<-ggplot(data=pr, aes(pickrate1)) + geom_histogram(breaks=seq(40, 100, by = 5), 
                                             aes(fill=..count..)) + 
-                                  labs(title="Pick rate for position 1") +
+                                  labs(title="Pick rate for position 1 in %") +
                                   labs(x="Pick rate 1", y="Count") + 
                                   xlim(c(50,100)) + 
                                   ylim(c(0,60)) +
                                   scale_fill_gradient("Count", low = "#004949", high = "#36A679")
+plot(pickrate1)
 
-
-ggplot(data=pr2, aes(pickrate2)) + geom_histogram(breaks=seq(0, 50, by = 5), 
+pickrate2<-ggplot(data=pr2, aes(pickrate2)) + geom_histogram(breaks=seq(0, 50, by = 5), 
                                                  aes(fill=..count..)) + 
-                                  labs(title="Pick rate for position 2") +
+                                  labs(title="Pick rate for position 2 in %") +
                                   labs(x="Pick rate 2", y="Count") + 
                                   xlim(c(5,50)) + 
                                   ylim(c(0,15)) +
                                   scale_fill_gradient("Count", low = "#004949", high = "#36A679")
 
-
+plot(pickrate2)
 
 #boxplot
 bp<-ggplot(pr,aes(pos1,pickrate1)) + geom_boxplot(fill = c('#004949','#198989','#36A679','#E46B2A','#F48950'))
