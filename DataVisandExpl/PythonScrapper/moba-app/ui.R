@@ -16,18 +16,13 @@ dashboardPage(skin="blue",
                   tabItem(tabName = "welcome",
                           fluidRow(
                             box(
-                              h1("Are you going to eat that?"),
-                              p("Its really simple to find a restaurant with apps such as Yelp! etc.
-                                However what they miss out are hygiene related conditions of various restaurants.
-                                With stats that show immense downloads of fitness apps, we can assume that most people are health conscience and probably prefer to eat healthy.
-                                But is eating healthy the only thing that matters?"),
-                              p("The Department of Health and Mental Hygenie (DOHMH) published over 167,000 records of restaurants in the Manhattan area. The dataset can be
-                                investigated to determine various information about the violations violated by restaurant and their resultant grades. Some severe violations have even lead to closures!  "),
+                              h1("League of Legends"),
+                              p("Esports are gaining a lot of momentum. League of legends is one of the many MMORPG games that conducts esports championship."),
+                              p("Advanced players expect to put in more then 40 hours a week to be at their peak. Build sites such as MOBA help up and coming players build thier champs to the max."),
                               h3("What to expect from this app"),
-                              p("The app can be used to qualitatively see various aspects of the dataset. For example, how many restaurants have been awarded grades such as A, B, C or have not yet been graded.
-                                Additionaly you can view the summarised version of the dataset in the",strong('Summary Stats tab.'),"  
-                                Finally you can also view grade A and B restaurants with non critical violations in the Manhattan area. "),
-                              
+                              p("Simply select your favourite champs and see whether they have a fighting chance against an opponent OR select your dream team and see how they would stack against another team."),
+                              h4("The relm is yours, Summoner!"),
+                            
                               width='1000px')
                             
                                   )
@@ -102,7 +97,21 @@ dashboardPage(skin="blue",
                                    box(width=10,title = "Graph",solidHeader = TRUE, status = "warning",
                                        htmlOutput("teamchampGraph"))
                                   )
-                          )#teamtabItems
+                          ),#teamtabItems
+                  tabItem(tabName="about",
+                          #h2("About Tariq"),
+                          fluidRow(
+                            column(width = 10,
+                                   box(
+                                     title = "About Tariq Khaleeq",
+                                     width = NULL, status = "primary",
+                                     p("Tariq graduated with a masters in Bioinformatics from Saarland University in Saarland, Germany."),
+                                     p("Having completed his masters he had a entrpreunial venture were he co-founded a company."),
+                                     p("As an avid geek and sports enthuse, his current major hobby includes: munching data!")
+                                   )
+                            )
+                          )
+                  )
                 )#tabItems
   )#dashboardBody
 )#dashboardPage

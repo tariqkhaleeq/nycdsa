@@ -4,6 +4,7 @@ source("./global.R")
 
 shinyServer(function(input,output){
   
+  
   output$answer<-renderText({
     if (input$your_champ=="" | input$opp_champ==""){
       "Select a Champion"
