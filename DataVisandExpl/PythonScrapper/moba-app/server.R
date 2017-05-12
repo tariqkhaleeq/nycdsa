@@ -8,8 +8,11 @@ shinyServer(function(input,output){
     if (input$your_champ=="" | input$opp_champ==""){
       "Select a Champion"
     }else{
-    paste(input$your_champ," vs ",input$opp_champ,sep=" ")
+    whoWins(input$your_champ,input$opp_champ)
     }
   })
   
+  output$champGraph<-renderGvis({
+    champStats(input$your_champ,input$opp_champ)
+  })
 })

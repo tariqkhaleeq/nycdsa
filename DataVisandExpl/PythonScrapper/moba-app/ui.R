@@ -35,16 +35,20 @@ dashboardPage(skin="blue",
                 
                   tabItem(tabName = "1v1",
                           fluidRow( 
-                            column(width = 6,wellPanel(
+                            column(width = 3,wellPanel(
                               box(width=NULL,title = "Choose you champion",solidHeader = TRUE, status = "primary",
                                   selectInput("your_champ", label = "Your champion", selectize = FALSE,
                                               choices = c("",loldata$Champ), selected = 20)),
                               box(width=NULL,title = "Choose you opponent",solidHeader = TRUE, status = "danger",
                                   selectInput("opp_champ", label = "Your opponent",selectize = FALSE,
                                               choices = c("",loldata$Champ), selected = NULL)),
-                              div(style="display:inline-block",submitButton(h3("FIGHT!!")),style="display:center-align"),br(),
-                              box(width=NULL,title = "Result",solidHeader = TRUE, status = "warning",
-                                  htmlOutput("answer"))
+                              div(style="display:inline-block",submitButton(h3("FIGHT!!")),style="display:center-align"),br()
+                            )),
+                            column(width = 8, wellPanel(
+                              box(width=NULL,title = "Result",solidHeader = TRUE, status = "success",
+                                  htmlOutput("answer")),
+                              box(width=NULL,title = "Graph",solidHeader = TRUE, status = "warning",
+                                  htmlOutput("champGraph"))
                             )
                           )
                       )
