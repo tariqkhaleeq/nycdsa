@@ -111,3 +111,7 @@ pwr2[,3]<-as.integer(strsplit(unlist(pwr2[,3]),"[%]"))
 ggplot(pwr2, aes(x=pos2,y=pickrate2)) + geom_tile(aes(fill=winrate2)) 
 
 #ggplot(loldata, aes(x=winrate1,y=pickrate1)) + geom_tile(aes(fill=pos1)) 
+
+## Top 5 champs in each position and their win rates
+
+
