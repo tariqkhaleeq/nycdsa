@@ -7,7 +7,6 @@ dashboardPage(skin="blue",
                                  menuItem("Welcome", tabName="welcome",icon = icon("hand-peace-o")),
                                  menuItem("1 v 1 matchup", tabName="1v1",icon = icon("king",lib="glyphicon")),
                                  menuItem("Team matchup", tabName = "team", icon = icon("users")),
-                                 menuItem("Basic Stats", tabName = "basic", icon = icon("pie-chart")),
                                  menuItem("About", tabName = "about", icon = icon("hand-spock-o"))
                                )
               ),
