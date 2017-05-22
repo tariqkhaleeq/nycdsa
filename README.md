@@ -13,6 +13,6 @@ Currently I have capstone projects that cover:
     - Scrap data using scrapy. Currently scrapped: UFC fights, Leage of Legends (LOL) and Moba.
     - Visualize and explore dataset
     - Build a shiny app possibly
-    - Read more about data here :
+    - Read more about data [here](http://blog.nycdatascience.com/student-works/web-scraping/scraping-mobafire-com-for-best-champion/). Additionally a [shiny app](https://tariqkhaleeq.shinyapps.io/moba_stats/) was made to see which champions would be successful in a team fight. This was extended to include team matchups aswell.
 
 You can find out more by clicking [DataVisandExplr folder](https://github.com/tariqkhaleeq/nycdsa/tree/master/DataVisandExpl).
