@@ -112,11 +112,75 @@ mean1<-mean((y.test-yhat1)^2)
 ############################
 ############################
 
-#test train and test test
-# see what is the difference between the two models in terms of MSE.
+# find multi colinear predictors
+# vif does not work on glmnet only lm or glm 
+vif(lm(loss~.,data=best.train))
+# generates and error link says it is due to perfect collinearality. Run alias to see which predictors
+dep_variables=alias(lm(loss~., data = train[,-1]))
+possible_dep<-rownames(dep_variables[[2]])
+#cat74, cat81, cat87, cat89, cat90, cat91, cat92, cat99, cat100, cat101, cat102, cat103, cat107
+#cat108, cat111, cat113, cat114, cat115, cat116
+colnames(train)
+bad<-(-c(75,78,82,86,88,90,91:93,100:104,108,109,112:117))
+best.train<-train[,bad]
+best.test<-test[,bad]
 
+# first lets test lasso, ridge and elasticnet
+# Objective is to see whether we further reduce the features.
 
+x1= model.matrix(loss~., best.train[,-1])[,-1]
+y1= best.train$loss
 
+train.index1=sample(1:nrow(x1), nrow(x1)/2)
+test.index1=(-train.index1)
+y.test1=y1[test.index1]
+
+fit.lasso1 <- glmnet(x1[train.index1,],y1[train.index1], family="gaussian", alpha=1)
+fit.ridge1 <- glmnet(x1[train.index1,],y1[train.index1], family="gaussian", alpha=0)
+fit.elnet1 <- glmnet(x1[train.index1,],y1[train.index1], family="gaussian", alpha=.5)
+
+fit.lasso.cv1 <- cv.glmnet(x1[train.index1,],y1[train.index1], type.measure="mse", alpha=1, 
+                          family="gaussian")
+fit.ridge.cv1 <- cv.glmnet(x1[train.index1,],y1[train.index1], type.measure="mse", alpha=0,
+                          family="gaussian")
+fit.elnet.cv1 <- cv.glmnet(x1[train.index1,],y1[train.index1], type.measure="mse", alpha=.5,
+                          family="gaussian")
+
+par(mfrow=c(3,2))
+plot(fit.lasso1, xvar="lambda")
+plot(fit.lasso.cv1, main="LASSO")
+
+plot(fit.ridge1, xvar="lambda")
+plot(fit.ridge.cv1, main="Ridge")
+
+plot(fit.elnet1, xvar="lambda")
+plot(fit.elnet.cv1, main="Elastic")
+
+yhat0<-predict(fit.ridge.cv1, s = fit.ridge.cv1$lambda.1se, newx=x1[test.index1,])
+yhat0.5<-predict(fit.elnet.cv1, s = fit.elnet.cv1$lambda.1se, newx=x1[test.index1,])
+yhat1<-predict(fit.lasso.cv1, s = fit.lasso.cv1$lambda.1se, newx=x1[test.index1,])
+
+mean0<-mean((y.test1-yhat0)^2)
+mean0.5<-mean((y.test1-yhat0.5)^2)
+mean1<-mean((y.test1-yhat1)^2)
+
+# Ridge still wins mean0 = 4589096 mean0.5=11667780 mean1=11847863
+
+# run vif on the best dataset
+
+vif(lm(loss~.,data=best.train[,c(-1,-86)]))
+
+foo<-model.matrix(loss~.,data = best.train[,-1])
+vif(lm(loss~cat1+cat2+cat3,data=best.train[,-1]))
+#try vif on dummified data
+dum.best<-dummy(best.train[,c(-1,-86)])
+dum.train.best<-cbind(dum.best,best.train[,c(98:112)])
+vif(lm(loss~.,data=dum.train.best))
+
+#still error
+dep_variables2=alias(lm(loss~., data = dum.train.best))
+
+# Now lets test MLR
 ###########################
 ###########################
 ###########################
@@ -126,7 +190,7 @@ library(psych)
 #train.dummy<-dummy(train)
 # Problem seems to be with factors. Thats why it gave that error that x should be numeric.
 # newdata_float<-as.integer(unlist(newdata))
-fa.parallel(as.matrix(newdata_float), fa="pc",n.iter=100)
+fa.parallel(, fa="pc",n.iter=100)
 pc.train<-principal(train.dummy, nfactors =2, rotate ="none")
 #`Error in cor(r, use = "pairwise") : 'x' must be numeric``
 
