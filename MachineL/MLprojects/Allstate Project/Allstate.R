@@ -168,7 +168,7 @@ mean1<-mean((y.test1-yhat1)^2)
 
 # run vif on the best dataset
 
-vif(lm(loss~.,data=best.train[,c(-1,-86)]))
+car::vif(lm(loss~.,data=best.train[,c(-1,-86)]))
 
 foo<-model.matrix(loss~.,data = best.train[,-1])
 vif(lm(loss~cat1+cat2+cat3,data=best.train[,-1]))
