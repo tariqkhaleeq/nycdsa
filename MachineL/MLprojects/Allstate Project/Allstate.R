@@ -121,7 +121,7 @@ possible_dep<-rownames(dep_variables[[2]])
 #cat74, cat81, cat87, cat89, cat90, cat91, cat92, cat99, cat100, cat101, cat102, cat103, cat107
 #cat108, cat111, cat113, cat114, cat115, cat116
 colnames(train)
-bad<-(-c(75,78,82,86,88,90,91:93,100:104,108,109,112:117))
+bad<-(-c(75,77,78,82,86,87,88,90,91:93,97,99,100:104,107,108,109,112:117,123,128:130))
 best.train<-train[,bad]
 best.test<-test[,bad]
 
@@ -168,19 +168,56 @@ mean1<-mean((y.test1-yhat1)^2)
 
 # run vif on the best dataset
 
-car::vif(lm(loss~.,data=best.train[,c(-1,-86)]))
+vif_best.data<-car::vif(lm(loss~.,data=best.train[,c(-1,-86)]))
+# 77 87 99 123 128:130 > 5
+# re did bad and ended up having new best train and best test
 
-foo<-model.matrix(loss~.,data = best.train[,-1])
-vif(lm(loss~cat1+cat2+cat3,data=best.train[,-1]))
-#try vif on dummified data
-dum.best<-dummy(best.train[,c(-1,-86)])
-dum.train.best<-cbind(dum.best,best.train[,c(98:112)])
-vif(lm(loss~.,data=dum.train.best))
+# run lm
 
-#still error
-dep_variables2=alias(lm(loss~., data = dum.train.best))
+model.lm<-lm(loss~.,best.train[,c(-1,-86,-c(90:92))])
+#Residual standard error: 2091 on 188155 degrees of freedom
+#Multiple R-squared:  0.4821,	Adjusted R-squared:  0.4817 
+#F-statistic:  1081 on 162 and 188155 DF,  p-value: < 2.2e-16
+final<-predict(model.lm,best.test[,c(-1,-86,-c(90:92))])
+MSE<-mean((final-best.train$loss)^2)
 
-# Now lets test MLR
+model.data<-data.frame(id=best.test$id,loss=final, stringsAsFactors=FALSE)
+
+write.csv(model.data,"~/allstate-linearmodel.csv",row.names=FALSE, quote=FALSE)
+
+x2= model.matrix(loss~., best.train[,-1])[,-1]
+y2= best.train$loss
+
+fit.lasso2 <- glmnet(x2,y2, family="gaussian", alpha=1)
+fit.ridge2 <- glmnet(x2,y2, family="gaussian", alpha=0)
+fit.elnet2 <- glmnet(x2,y2, family="gaussian", alpha=.5)
+
+fit.lasso.cv2 <- cv.glmnet(x2,y2, type.measure="mse", alpha=1, 
+                           family="gaussian")
+fit.ridge.cv2 <- cv.glmnet(x2,y2, type.measure="mse", alpha=0,
+                           family="gaussian")
+fit.elnet.cv2 <- cv.glmnet(x2,y2, type.measure="mse", alpha=.5,
+                           family="gaussian")
+
+par(mfrow=c(3,2))
+plot(fit.lasso2, xvar="lambda")
+plot(fit.lasso.cv2, main="LASSO")
+
+plot(fit.ridge2, xvar="lambda")
+plot(fit.ridge.cv2, main="Ridge")
+
+plot(fit.elnet2, xvar="lambda")
+plot(fit.elnet.cv2, main="Elastic")
+
+yhat0<-predict(fit.ridge.cv2, s = fit.ridge.cv2$lambda.1se, best.test[,-1])
+yhat0.5<-predict(fit.elnet.cv2, s = fit.elnet.cv2$lambda.1se, newx=best.test[,-1])
+yhat1<-predict(fit.lasso.cv2, s = fit.lasso.cv2$lambda.1se, newx=best.test[,-1])
+
+mean0<-mean((y.test1-yhat0)^2)
+mean0.5<-mean((y.test1-yhat0.5)^2)
+mean1<-mean((y.test1-yhat1)^2)
+
+
 ###########################
 ###########################
 ###########################
