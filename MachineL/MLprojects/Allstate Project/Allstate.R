@@ -255,15 +255,20 @@ best.dummy.train[]<-lapply(best.dummy.train, as.numeric)
 best.data<-data.matrix(best.dummy.train)
 labels<-colnames(best.dummy.train)
 
+foo.test<-sparse.model.matrix(~.,data=best.test[,-1])
+
 foo<-sparse.model.matrix(loss~.-1,data=best.train)
-#hist(best.train$loss,ylim=c(0,5000))
-output_vector= best.train$loss < 20000
+
+output_vector= best.train$loss < 10000
 output_vector[which(output_vector==TRUE)]<-1
 output_vector[which(output_vector==FALSE)]<-0
 #change contionous labels
 # best.data<131 = 0 {x<5} | 1 {x>5}
-# best.data$loss = 0 {x<range(train[,132])[2]/2} | 1 {x>range(train[,132])[2]/2}
-
+# best.data$loss = 1 {x< 10000} | 0 {x>range(train[,132])[2]/2}
+# cuttoff was determined with the help of histogram hist(best.train$loss,ylim=c(0,5000))
+# [x] Need to revert the 1 and 0. Previously tried 1 {x< 10000} | 0 {x>range(train[,132])[2]/2}
+# now we try 0 {x< 10000} | 1 {x>range(train[,132])[2]/2}
+# This generates test error 0.00000!!
 #Loading required package: data.table
 #data.table 1.10.4
 #**********
@@ -271,4 +276,11 @@ output_vector[which(output_vector==FALSE)]<-0
 #If this a Mac and you obtained the Mac binary of data.table from CRAN, CRAN's Mac does not yet support OpenMP. 
 #In the meantime please follow our Mac installation instructions on the data.table homepage. If it works and you observe benefits from multiple threads as others have reported, please convince Simon Ubanek by sending him evidence and ask him to turn on OpenMP support when CRAN builds package binaries for Mac. Alternatives are to install Ubuntu on your Mac (which I have done and works well) or use Windows where OpenMP is supported and works well.
 
-xg.model<-xgboost(data=foo, label=output_vector, max.depth =2, eta=1, nround =2, nthread =2, objective="binary:logistic")
+xg.model<-xgboost(data=foo, label=output_vector, max.depth =2, eta=1, nround =10, nthread =2, objective="binary:logistic")
+# train error goes to zero!?
+pred <- predict(xg.model,foo.test)
+
+# test error
+# because of the dataset. We will assume the test$label = train$label = train$loss
+err <- mean(as.numeric(pred > 0.5) != output_vector)
+print(paste("test-error=", err))
