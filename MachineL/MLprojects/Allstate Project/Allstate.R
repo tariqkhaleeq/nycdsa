@@ -232,6 +232,8 @@ pc.train<-principal(train.dummy, nfactors =2, rotate ="none")
 #`Error in cor(r, use = "pairwise") : 'x' must be numeric``
 
 # XGboost
+#https://xgboost.readthedocs.io/en/latest/R-package/xgboostPresentation.html#dataset-presentation
+#http://xgboost.readthedocs.io/en/latest/R-package/discoverYourData.html
 library(xgboost)
 
 data(agaricus.train, package='xgboost')
