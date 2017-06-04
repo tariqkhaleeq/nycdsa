@@ -1,7 +1,7 @@
 ### playing with Allstate data
 library(dummy)
 library(glmnet)
-train<-read.csv("~/nycdsa/MachineL/MLprojects/Allstate Project/train.csv")
+train<-read.csv("~/nycdsa/MachineL/MLprojects/Allstate Project/train.csv", stringsAsFactors = FALSE)
 test<-read.csv("~/nycdsa/MachineL/MLprojects/Allstate Project/test.csv")
  
 #Feature engineering of train and test data.
@@ -227,19 +227,48 @@ library(psych)
 #train.dummy<-dummy(train)
 # Problem seems to be with factors. Thats why it gave that error that x should be numeric.
 # newdata_float<-as.integer(unlist(newdata))
-fa.parallel(, fa="pc",n.iter=100)
+fa.parallel(fa="pc",n.iter=100)
 pc.train<-principal(train.dummy, nfactors =2, rotate ="none")
 #`Error in cor(r, use = "pairwise") : 'x' must be numeric``
 
 # XGboost
 library(xgboost)
 
-n <- 100    # Number of observations
-p <- 50     # Number of predictors included in model
-CovMatrix <- outer(1:p, 1:p, function(x,y) {.7^abs(x-y)})
-foox <- mvrnorm(n, rep(0,p), CovMatrix)
-fooy <- 10 * apply(foox[, 1:2], 1, sum) + 
-  5 * apply(foox[, 3:4], 1, sum) +
-  apply(foox[, 5:14], 1, sum) +
-  rnorm(n)
+data(agaricus.train, package='xgboost')
+data(agaricus.test, package='xgboost')
+train <- agaricus.train
+test <- agaricus.test
+# fit model
+bst <- xgboost(data = train$data, label = train$label, max.depth = 2, eta = 1, nround = 2,
+               nthread = 2, objective = "binary:logistic")
+# predict
+pred <- predict(bst, test$data)
 
+
+
+# play with best.train | play with train
+#play with best.train first
+library(dummy)
+head(best.train)
+best.dummy.train<-dummy(best.train)
+best.dummy.train[]<-lapply(best.dummy.train, as.numeric)
+best.data<-data.matrix(best.dummy.train)
+labels<-colnames(best.dummy.train)
+
+foo<-sparse.model.matrix(loss~.-1,data=best.train)
+#hist(best.train$loss,ylim=c(0,5000))
+output_vector= best.train$loss < 20000
+output_vector[which(output_vector==TRUE)]<-1
+output_vector[which(output_vector==FALSE)]<-0
+#change contionous labels
+# best.data<131 = 0 {x<5} | 1 {x>5}
+# best.data$loss = 0 {x<range(train[,132])[2]/2} | 1 {x>range(train[,132])[2]/2}
+
+#Loading required package: data.table
+#data.table 1.10.4
+#**********
+#  This installation of data.table has not detected OpenMP support. It will still work but in single-threaded mode. 
+#If this a Mac and you obtained the Mac binary of data.table from CRAN, CRAN's Mac does not yet support OpenMP. 
+#In the meantime please follow our Mac installation instructions on the data.table homepage. If it works and you observe benefits from multiple threads as others have reported, please convince Simon Ubanek by sending him evidence and ask him to turn on OpenMP support when CRAN builds package binaries for Mac. Alternatives are to install Ubuntu on your Mac (which I have done and works well) or use Windows where OpenMP is supported and works well.
+
+xg.model<-xgboost(data=foo, label=output_vector, max.depth =2, eta=1, nround =2, nthread =2, objective="binary:logistic")
