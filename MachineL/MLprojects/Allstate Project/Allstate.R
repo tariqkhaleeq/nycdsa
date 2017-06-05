@@ -278,11 +278,75 @@ output_vector[which(output_vector==FALSE)]<-0
 #If this a Mac and you obtained the Mac binary of data.table from CRAN, CRAN's Mac does not yet support OpenMP. 
 #In the meantime please follow our Mac installation instructions on the data.table homepage. If it works and you observe benefits from multiple threads as others have reported, please convince Simon Ubanek by sending him evidence and ask him to turn on OpenMP support when CRAN builds package binaries for Mac. Alternatives are to install Ubuntu on your Mac (which I have done and works well) or use Windows where OpenMP is supported and works well.
 
-xg.model<-xgboost(data=foo, label=output_vector, max.depth =2, eta=1, nround =10, nthread =2, objective="binary:logistic")
+xg.model<-xgboost(data=foo, label=output_vector, max.depth =2, eta=1, nround =10, nthread =2, objective="binary:logistic", eval_metric="auc")
 # train error goes to zero!?
+# eval_metric="rmse"
+#[1]	train-rmse:0.192795 
+#[2]	train-rmse:0.161695 
+#[3]	train-rmse:0.155632 
+#[4]	train-rmse:0.153802 
+#[5]	train-rmse:0.152053 
+#[6]	train-rmse:0.151094 
+#[7]	train-rmse:0.150640 
+#[8]	train-rmse:0.149996 
+#[9]	train-rmse:0.149280 
+#[10]	train-rmse:0.148690 
+
 pred <- predict(xg.model,foo.test)
 
 # test error
 # because of the dataset. We will assume the test$label = train$label = train$loss
 err <- mean(as.numeric(pred > 0.5) != output_vector)
 print(paste("test-error=", err))
+
+# increasing the number of rounds and max.dept of the tree increases the test error. 
+
+## XGBoost using linear regression
+
+# objective = 'multi:softprob'
+params = list(
+  eta = 0.01,
+  gamma = 0.175,
+  max_depth = 7,
+  max_delta_step = 0,
+  scale_pos_weight = 1,
+  min_child_weight = 1,
+  colsample_bytree = 0.8,
+  colsample_bylevel = 1,
+  subsample = 0.8,
+  seed = 0,
+  lambda = 1,
+  alpha = 0,
+  nthread = 16,
+  objective = 'multi:softprob',
+  eval_metric = 'mlogloss',
+  num_class = 3,
+  maximize = F
+)
+
+wtf<-data.matrix(best.train[,-1])
+xgb.best.train<-xgb.DMatrix(wtf,label=output_vector)
+xgb_train = xgb.cv(params, data = xgb.best.train,nrounds = 5000, nfold = 5, early_stopping_rounds = 20)
+#Best iteration:
+#[1017]	train-mlogloss:0.114459+0.000355	test-mlogloss:0.124675+0.001603
+xgb.matrix<-as.matrix(xgb_train)
+log_loss_df = as.data.frame(xgb.matrix[4])
+
+min_log_loss_test = min(log_loss_df$test_mlogloss_mean)
+min_log_loss_train = min(log_loss_df$train_mlogloss_mean)
+
+min_log_loss_idx = which.min(log_loss_df$test_mlogloss_mean)
+# Get the index. It is the same as the console.
+nround = min_log_loss_idx
+
+trained_xgb <- xgb.train(params = params, data=xgb.best.train, nrounds=nround, nfold = 5, early_stopping_rounds = 20, verbose=1, watchlist=list(validation=xgb.best.train))
+
+pred2<-predict(trained_xgb,foo.test)
+
+err2 <- mean(as.numeric(pred2 > 0.5) != output_vector)
+print(paste("test-error=", err2))
+
+model.data2<-data.frame(id=test$id,loss=pred, stringsAsFactors=FALSE)
+foo.pred<-pred2[1:length(pred)]
+model.data3<-data.frame(id=test$id,loss=foo.pred, stringsAsFactors=FALSE)
+write.csv(model.data3,"~/allstate-xgboost2.csv",row.names=FALSE, quote=FALSE)
