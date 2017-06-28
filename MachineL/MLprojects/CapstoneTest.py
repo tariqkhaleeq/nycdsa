@@ -35,8 +35,11 @@ orders=pd.DataFrame(cur.fetchall(),columns=["order_id","user_id","eval_set","ord
 cur.execute("SELECT * FROM products LIMIT 50;")
 products=pd.DataFrame(cur.fetchall(),columns=["product_id","product_name","aisle_id","department_id"])
 
-# Trial 1: Just run the opp data with graphlab and see what the result looks like.
+# Trial 1a: Just run the opp data with graphlab and see what the result looks like.
+# Trial 1b: Run target as 'product_id'
 # Trial 2: Make a proper dataset and then run graphlab
+
+#Trial 1a:
 opp_data=graphlab.SFrame(opp)
 popularity_model=graphlab.popularity_recommender.create(opp_data, user_id='order_id', item_id='product_id',target='reordered')
 #Get recommendations for first 5 users and print them
@@ -44,3 +47,31 @@ popularity_model=graphlab.popularity_recommender.create(opp_data, user_id='order
 #k=5 specifies top 5 recommendations to be given
 popularity_recomm = popularity_model.recommend(users=range(1,6),k=5)
 popularity_recomm.print_rows(num_rows=25)
+
+# Pearson's collabourative filtering
+item_sim_model = graphlab.item_similarity_recommender.create(opp_data, user_id='order_id', item_id='product_id',target='reordered', similarity_type='pearson')
+item_sim_recomm = item_sim_model.recommend()
+item_sim_recomm.print_rows()
+
+# Jaccard filtering
+j_item_sim_model = graphlab.item_similarity_recommender.create(opp_data, user_id='order_id', item_id='product_id',target='reordered', similarity_type='jaccard')
+j_item_sim_recomm = j_item_sim_model.recommend()
+j_item_sim_recomm.print_rows()
+
+#cosine filtering
+c_item_sim_model = graphlab.item_similarity_recommender.create(opp_data, user_id='order_id', item_id='product_id',target='reordered', similarity_type='cosine')
+c_item_sim_recomm = c_item_sim_model.recommend()
+c_item_sim_recomm.print_rows()
+
+# cosine and jaccard show the same output while peason and popularity show the same.
+
+#Trial 1b:
+popularity_model_1b=graphlab.popularity_recommender.create(opp_data,target='reordered')
+#Generates error needs to know user_ids and item_ids
+popularity_model_1b=graphlab.popularity_recommender.create(opp_data,user_id='product_id',item_id='order_id',target='reordered')
+popularity_recomm_1b = popularity_model_1b.recommend()
+popularity_recomm_1b.print_rows()
+# this showed me some crazy results but definately interesting.
+
+#Trial 2: Generate dataset similar to http://www.salemmarafi.com/code/collaborative-filtering-with-python/
+# TODO: See if you make a dataset with user_id, order_id, product_id and run that through Trial 1 again.
