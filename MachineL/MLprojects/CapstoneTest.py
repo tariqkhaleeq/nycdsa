@@ -5,6 +5,7 @@
 import psycopg2
 import pandas as pd
 import graphlab
+from scipy.spatial.distance import cosine
 
 try:
     conn = psycopg2.connect("dbname='Capstone' user='postgres' host='localhost' password='annie123'")
@@ -90,4 +91,61 @@ for i in range(0,opp.index.size):
             idx=new.index.get_loc(value2)
     new.iloc[idx][value]=1
 #turn NaNs to zero.
-new.fillna(0)
+new=new.fillna(0)
+
+data_ibs = pd.DataFrame(index=new.columns,columns=new.columns)
+for i in range(0,len(data_ibs.columns)) :
+    # Loop through the columns for each column
+    print i
+    for j in range(0,len(data_ibs.columns)) :
+        print j
+      # Fill in placeholder with cosine similarities
+        print 1-cosine(new.iloc[:,i],new.iloc[:,j])
+        data_ibs.iloc[i,j] = 1-cosine(new.iloc[:,i],new.iloc[:,j])
+
+data_neighbours = pd.DataFrame(index=data_ibs.columns,columns=range(1,11))
+
+# Loop through our similarity dataframe and fill in neighbouring item names
+for i in range(0,len(data_ibs.columns)):
+    data_neighbours.iloc[i,:10] = data_ibs.iloc[0:,i].sort_values(ascending=False)[:10].index
+
+data_neighbours.head(6).iloc[:6,2:4]
+# The table shows items that are the most similar!
+
+# Now user-item filtering
+
+def getScore(history, similarities):
+   return sum(history*similarities)/sum(similarities)
+
+data_sims = pd.DataFrame(index=new.index,columns=new.columns)
+
+#data_sims.iloc[:,:1] = new.iloc[:,:1]
+for i in range(0,len(data_sims.index)):
+    for j in range(0,len(data_sims.columns)):
+        print i,j
+        user = data_sims.index[i]
+        product = data_sims.columns[j]
+        print user, product
+        if new.iloc[i,j] == 1:
+            print 1
+            data_sims.iloc[i,j] = 0
+        else:
+            print 0
+            product_top_names = data_neighbours.ix[product][1:10]
+            product_top_sims = data_ibs[product].sort_values(ascending=False)[1:10]
+            user_purchases = new.ix[user,product_top_names]
+            data_sims.iloc[i,j] = getScore(user_purchases,product_top_sims)
+
+# Get the top items
+data_recommend = pd.DataFrame(index=data_sims.index, columns=['1','2','3','4','5','6'])
+#data_recommend.ix[0:,0] = data_sims.iloc[:,0]
+
+# Instead of top item scores, we want to see names
+for i in range(0,len(data_sims.index)):
+    data_recommend.iloc[i,:] = data_sims.iloc[i,:].sort_values(ascending=False).iloc[1:7,].index.transpose()
+
+# Print a sample
+print data_recommend.ix[:,:4]
+
+# Result seems better. Seems to follow the basic principle. Add more data to see what happens
+# TODO: Apply regression
