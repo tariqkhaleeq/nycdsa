@@ -75,3 +75,19 @@ popularity_recomm_1b.print_rows()
 
 #Trial 2: Generate dataset similar to http://www.salemmarafi.com/code/collaborative-filtering-with-python/
 # TODO: See if you make a dataset with user_id, order_id, product_id and run that through Trial 1 again.
+colNames=opp.product_id
+#need unique order_id
+rowNames=opp.order_id.unique()
+new=pd.DataFrame(index=rowNames,columns=colNames)
+
+for i in range(0,opp.index.size):
+    print opp.iloc[i,1]
+    value=opp.iloc[i,1]
+    for j in range(0,new.columns.size):
+        if(value==new.columns[j]):
+            print opp.iloc[i,0]
+            value2=opp.iloc[i,0]
+            idx=new.index.get_loc(value2)
+    new.iloc[idx][value]=1
+#turn NaNs to zero.
+new.fillna(0)
