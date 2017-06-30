@@ -69,3 +69,5 @@ day6=orders.loc[orders["order_dow"]==6]
 #
 days_order=orders.days_since_prior_order.value_counts()
 days_order=days_order[days_order.index.sort_values()]
+
+#TODO: Make tree map and plots
