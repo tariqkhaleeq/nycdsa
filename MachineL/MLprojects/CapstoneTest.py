@@ -24,16 +24,16 @@ cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema
 
 # to see how to make a matrix for us to work with.
 # The important one is "orders_product_prior" which is connected to table "order"
-cur.execute("SELECT * FROM orders_product_prior LIMIT 50;")
+cur.execute("SELECT * FROM orders_product_prior LIMIT 500;")
 opp=pd.DataFrame(cur.fetchall(),columns=["order_id","product_id","add_to_chart","reordered"])
 
 # TODO: get info in ascending order.
-cur.execute("SELECT * FROM orders ORDER BY order_id ASC LIMIT 100;")
+cur.execute("SELECT * FROM orders ORDER BY order_id ASC LIMIT 500;")
 orders=pd.DataFrame(cur.fetchall(),columns=["order_id","user_id","eval_set","order_num", "order_dow","order_hour_of_day","days_since_prior_order"])
 
 # Incase I want to over efficient and try to change product i to product names
 # Otherwise this is an unnecessary step.
-cur.execute("SELECT * FROM products LIMIT 50;")
+cur.execute("SELECT * FROM products LIMIT 500;")
 products=pd.DataFrame(cur.fetchall(),columns=["product_id","product_name","aisle_id","department_id"])
 
 # Trial 1a: Just run the opp data with graphlab and see what the result looks like.
@@ -65,14 +65,15 @@ c_item_sim_recomm = c_item_sim_model.recommend()
 c_item_sim_recomm.print_rows()
 
 # cosine and jaccard show the same output while peason and popularity show the same.
+# rerunning it with a bigger data set shows that cosine and jaccard are the same but pearson and popularity recommend different items.
 
 #Trial 1b:
-popularity_model_1b=graphlab.popularity_recommender.create(opp_data,target='reordered')
-#Generates error needs to know user_ids and item_ids
 popularity_model_1b=graphlab.popularity_recommender.create(opp_data,user_id='product_id',item_id='order_id',target='reordered')
 popularity_recomm_1b = popularity_model_1b.recommend()
 popularity_recomm_1b.print_rows()
 # this showed me some crazy results but definately interesting.
+# Turns out that this determines similarity of item with user(order_id)
+# This is intersting because this can show users that are interested in a item.
 
 #Trial 2: Generate dataset similar to http://www.salemmarafi.com/code/collaborative-filtering-with-python/
 # TODO: See if you make a dataset with user_id, order_id, product_id and run that through Trial 1 again.
@@ -91,6 +92,7 @@ for i in range(0,opp.index.size):
             idx=new.index.get_loc(value2)
     new.iloc[idx][value]=1
 #turn NaNs to zero.
+
 new=new.fillna(0)
 
 data_ibs = pd.DataFrame(index=new.columns,columns=new.columns)
@@ -132,8 +134,8 @@ for i in range(0,len(data_sims.index)):
         else:
             print 0
             product_top_names = data_neighbours.ix[product][1:10]
-            product_top_sims = data_ibs[product].sort_values(ascending=False)[1:10]
-            user_purchases = new.ix[user,product_top_names]
+            product_top_sims = data_ibs.ix[product].sort_index(ascending=False)[1:10]
+            user_purchases = new.ix[user,product_top_names.iloc[0,:].drop_duplicates(keep='first')]
             data_sims.iloc[i,j] = getScore(user_purchases,product_top_sims)
 
 # Get the top items
